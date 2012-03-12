@@ -7,7 +7,8 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @movies = Movie.order(params[:sort_by])
+    @header_style={:title=>((params[:sort_by]=='title')? "hilite": ""), :release_date=>((params[:sort_by]=='release_date')? "hilite":"")}
   end
 
   def new
