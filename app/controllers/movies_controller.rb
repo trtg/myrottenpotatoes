@@ -7,21 +7,64 @@ class MoviesController < ApplicationController
   end
 
   def index
+  @need_redirect=false
+  logger.debug "NEW PARAMS IS**** #{params[:sort_by]}"
+  if(!params[:sort_by].nil?)
+      session[:sort_by]=params[:sort_by]
+        @need_redirect=@need_redirect or false
+      else
+      if(!session[:sort_by].nil?)
+        params[:sort_by]=session[:sort_by]
+        @need_redirect=@need_redirect or true
+        #redirect_to movies_path(params)
+      end
+    end
+
     if(!params[:ratings].nil?)
+      session[:ratings]=params[:ratings]
       @checkstate=params[:ratings].keys
       qstring=String.new
       index=1
       @checkstate.each{|box| qstring =qstring+"rating='#{box}'";if(index<@checkstate.length) then qstring=qstring+" or " end;index=index+1}
       @sort_key = params[:sort_by]
       @movies=Movie.find(:all,:conditions=>[qstring],:order=>@sort_key)
-    else
-      @movies = Movie.order(params[:sort_by])
-      @sort_key = params[:sort_by]
-      @checkstate=Array.new
-    end
+      else
+        if(!session[:ratings].nil?)
+          params[:ratings]=session[:ratings]
+          @need_redirect= true
+          #redirect_to movies_path(params)
+        else
+          @movies = Movie.order(params[:sort_by])
+          @sort_key = params[:sort_by]
+          @checkstate=Array.new
+        end
+      end
+
     @header_style={:title=>((params[:sort_by]=='title')? "hilite": ""), :release_date=>((params[:sort_by]=='release_date')? "hilite":"")}
     @all_ratings=Movie.ratings
-  end
+if @need_redirect==true
+  logger.debug "HAD TO REDIRECT!!!!!!!!!!!!!!" 
+  redirect_to movies_path(params)
+end
+
+#    if(!params[:ratings].nil?)
+#      session[:ratings]=params[:ratings]
+#      @checkstate=params[:ratings].keys
+#      qstring=String.new
+#      index=1
+#      @checkstate.each{|box| qstring =qstring+"rating='#{box}'";if(index<@checkstate.length) then qstring=qstring+" or " end;index=index+1}
+#      @sort_key = params[:sort_by]
+#      @movies=Movie.find(:all,:conditions=>[qstring],:order=>@sort_key)
+#    else
+#      @movies = Movie.order(params[:sort_by])
+#      @sort_key = params[:sort_by]
+#      @checkstate=Array.new
+#    end
+#    @header_style={:title=>((params[:sort_by]=='title')? "hilite": ""), :release_date=>((params[:sort_by]=='release_date')? "hilite":"")}
+#    @all_ratings=Movie.ratings
+
+
+  end#end index
 
   def new
     # default: render 'new' template
