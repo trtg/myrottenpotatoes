@@ -7,10 +7,14 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.order(params[:sort_by])
+    @checkstate=params[:ratings].keys
+    qstring=String.new
+    index=1
+    @checkstate.each{|box| qstring =qstring+"rating='#{box}'";if(index<@checkstate.length) then qstring=qstring+" or " end;index=index+1}
+    @movies=Movie.find(:all,:conditions=>[qstring])
+#@movies = Movie.order(params[:sort_by])
     @header_style={:title=>((params[:sort_by]=='title')? "hilite": ""), :release_date=>((params[:sort_by]=='release_date')? "hilite":"")}
     @all_ratings=Movie.ratings
-    @checkstate=params[:ratings]
   end
 
   def new
