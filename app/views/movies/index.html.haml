@@ -5,13 +5,13 @@
   - @all_ratings.each do |rating|
     = rating
     = check_box_tag("ratings[#{rating}]",1,@checkstate.include?(rating),:id=>"ratings_#{rating}")
-  = submit_tag 'Refresh'
+  = submit_tag('Refresh',:id=>"ratings_submit")
 
 %table#movies
   %thead
     %tr
       %th{:class=>"#{@header_style[:title]}",:id=>"title_header"}= link_to "Movie Title", movies_path({:sort_by=>'title',:ratings=>params[:ratings]}),:id=>"title_header"
-      %th= @sort_key 
+      %th Rating  
       %th{:class=>"#{@header_style[:release_date]}",:id=>"release_date_header"}= link_to "Release Date",movies_path({:sort_by=>'release_date',:ratings=>params[:ratings]}),:id=>"release_date_header"
       %th More Info
   %tbody
